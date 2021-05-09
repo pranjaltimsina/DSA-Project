@@ -52,7 +52,7 @@ def main(s):
     try:
         path = sys.argv[1]
     except IndexError:
-        path = None 
+        path = None
 
     # Make the trie
     # trie.main returns list of all possible paths
@@ -126,10 +126,23 @@ def main(s):
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
+<<<<<<< HEAD
             for match in matches:
                 output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
 
             output_box.addstr(f"\n\n{time_taken}")
+=======
+            with open('log.txt', 'a') as log:
+                for match in matches:
+                    log.write(f"| {datetime.datetime.now():>20} | {match[0]:>4} | {match[1]}")
+                    try:
+                        output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+                        log.write(f"\n")
+                    except all:
+                        log.write(f" | FAILED\n")
+
+            output_box.addstr(time_taken)
+>>>>>>> 646702bdf27ef40982425ad8feed56929b59d726
 
         elif (full_string == ""):
             # Message if there is no input
