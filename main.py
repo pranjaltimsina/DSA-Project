@@ -91,15 +91,17 @@ def main(s):
     while True:
         # Get a character from the keyboard
         c = s.getch(3, input_x)
-        if (c in [263, 127] and not input_x == 11):
-            # Check if backspace and not empty string
-            input_x -= 1  # Decrement cursors x-coordinate
-            full_string = full_string[:-1]  # Remove last char of search query
+        if (c in [263, 127]):
+            # Check if backspace
             s.addch(3, input_x, " ")
             s.addch(3, input_x+1, " ")
             s.addch(3, input_x+2, " ")
-            s.delch(3, input_x)  # Remove the character from the screen
-            output_box.clear()  # Clear the output box
+            if (not input_x == 11):
+                # Check if not empty string
+                input_x -= 1  # Decrement cursors x-coordinate
+                full_string = full_string[:-1]  # Remove last char of search query
+                s.delch(3, input_x)  # Remove the character from the screen
+                output_box.clear()  # Clear the output box
         elif not validate_key(c):
             continue
 
@@ -148,7 +150,7 @@ def main(s):
 
         # since everything cleared, the message at bottom needs to be written
         s.addstr(sh-2, 3, time_taken)
-        s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> twice to exit.')
+        s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.')
 
         if (c == 27):
             # Quit if <ESC> is pressed
