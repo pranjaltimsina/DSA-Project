@@ -27,7 +27,8 @@ def validate_key(c: int):
             577
             ]
     invalids += range(265, 275)
-    if (c in invalids):
+    decoded = curses.keyname(c).decode('utf-8')
+    if (c in invalids or decoded.startswith('^') and not decoded.startswith('^[')):
         return False
     else:
         return True
@@ -62,7 +63,7 @@ def main(s):
     output_box.addstr('Results:\nTo find, you must seek')
     
     # Instructions the bottom of the screen
-    s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> twice to exit.')
+    s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.')
 
     input_x = 11 # The x coordinate of the cursor 
     full_string = "" # full_string is the search query
@@ -75,7 +76,7 @@ def main(s):
         # Get a character from the keyboard
         c = s.getch(3, input_x)
 
-        if (c in [263, 22] and not input_x == 11):
+        if (c in [263, 127] and not input_x == 11):
             # Check if backspace and not empty string 
             input_x -=1 # Decrement cursors x-coordinate
             full_string = full_string[:-1] # Remove last char of search query
