@@ -51,7 +51,7 @@ def main(s):
     try:
         path = sys.argv[1]
     except IndexError:
-        path = ''
+        path = '~/Pictures' 
 
     # Make the trie
     # trie.main returns list of all possible paths
