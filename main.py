@@ -52,6 +52,13 @@ def main(s):
         path = sys.argv[1]
     except IndexError:
         path = None
+    
+    # Define colors
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_GREEN , curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
     # Make the trie
     # trie.main returns list of all possible paths
@@ -66,13 +73,14 @@ def main(s):
 
     # Create a title box with height 2 rows and width 100%, starting at 1, 0
     title_box = s.subwin(2, sw-7, 1, 3)
-    title_box.addstr('Directory searching using Trie, fuzzysearch and DFS', curses.A_REVERSE)
-    title_box.chgat(-1, curses.A_REVERSE)  # That sweet background on the title
+    title_box.addstr('Directory searching using Trie, fuzzysearch and DFS', curses.color_pair(2))
+    # title_box.chgat(-1, curses.A_REVERSE)  # That sweet background on the title
+    title_box.chgat(-1, curses.color_pair(5))  # That sweet background on the title
     title_box.hline(1, 0, '-', sw-7)
 
     # Create a search box of height 2 rows, width 100 at 3, 0
     search_box = s.subwin(2, sw, 3, 0)
-    search_box.addstr('   Search: ')
+    search_box.addstr('   Search: ', curses.color_pair(4))
     search_box.hline(1, 3, '-', sw-7)
 
     # The output box that covers the rest of the screen
@@ -80,7 +88,7 @@ def main(s):
     output_box.addstr('Results:\nTo find, you must seek!')
 
     # Instructions the bottom of the screen
-    s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.')
+    s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.', curses.color_pair(3))
 
     input_x = 11  # The x coordinate of the cursor
     full_string = ""  # full_string is the search query
@@ -128,7 +136,7 @@ def main(s):
         if matches:
             matches.sort(key=lambda x: x[0], reverse=True)
         end_time = timeit.default_timer()
-        time_taken = f"{counter} matche(s) in {(end_time - start_time) * 1000} ms"
+        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
         if counter > sh - 10:
             matches = matches[:sh-11]
         if (not full_string == "" and not matches == []):
@@ -153,8 +161,8 @@ def main(s):
         s.refresh()
 
         # since everything cleared, the message at bottom needs to be written
-        s.addstr(sh-2, 3, time_taken)
-        s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.')
+        s.addstr(sh-2, 3, time_taken, curses.color_pair(2))
+        s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.', curses.color_pair(3))
 
         if (c == 27):
             # Quit if <ESC> is pressed
