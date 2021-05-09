@@ -52,7 +52,7 @@ def main(s):
     try:
         path = sys.argv[1]
     except IndexError:
-        path = None 
+        path = None
 
     # Make the trie
     # trie.main returns list of all possible paths
@@ -132,7 +132,7 @@ def main(s):
                     try:
                         output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
                         log.write(f"\n")
-                    except:
+                    except all:
                         log.write(f" | FAILED\n")
 
             output_box.addstr(time_taken)
