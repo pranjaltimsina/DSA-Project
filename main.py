@@ -5,7 +5,6 @@ import fuzzy
 import trie
 
 import timeit
-import datetime
 
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
