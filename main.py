@@ -127,11 +127,12 @@ def main(s):
             output_box.clear()
             with open('log.txt', 'a') as log:
                 for match in matches:
-                    log.write(f"{datetime.datetime.now()} {match[0]} | {match[1]}\n")
+                    log.write(f"| {datetime.datetime.now():>20} | {match[0]:>4} | {match[1]}")
                     try:
                         output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+                        log.write(f"\n")
                     except:
-                        log.write(f"Failed\n")
+                        log.write(f" | FAILED\n")
 
             output_box.addstr(time_taken)
 
