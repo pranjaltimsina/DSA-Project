@@ -120,26 +120,14 @@ def main(s):
                     matches.append((out[1], file_name,
                                     "/".join(file.split('/')[:-1])))
         end_time = timeit.default_timer()
-        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
+        time_taken = f"{counter} matche(s) in {(end_time - start_time) * 1000} ms"
         if counter > sh - 10:
-            matches = matches[:sh-10]
+            matches = matches[:sh-11]
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
             for match in matches:
                 output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
-
-            output_box.addstr(f"\n\n{time_taken}")
-            with open('log.txt', 'a') as log:
-                for match in matches:
-                    log.write(f"| {datetime.datetime.now():>20} | {match[0]:>4} | {match[1]}")
-                    try:
-                        output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
-                        log.write(f"\n")
-                    except all:
-                        log.write(f" | FAILED\n")
-
-            output_box.addstr(time_taken)
 
         elif (full_string == ""):
             # Message if there is no input
@@ -157,6 +145,7 @@ def main(s):
         s.refresh()
 
         # since everything cleared, the message at bottom needs to be written
+        s.addstr(sh-2, 3, time_taken)
         s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> twice to exit.')
 
         if (c == 27):
