@@ -1,5 +1,4 @@
 # FUZZY SEARCH
-
 # Returns true if each character in pattern is found in the string sequentially
 def fuzzy_match_simple(pattern, string):
     pattern_idx = 0

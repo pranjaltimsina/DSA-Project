@@ -76,14 +76,18 @@ def init_trie(tr, path):
         tr.insert(file)
 
 
-def main():
+def main(path = None):
     tr = Trie()
     # dir_path = input("Enter your directory path: ")
-    dir_path = "/home/krish/Pictures"
+    if not path:
+        dir_path = "/home/pranjal/Pictures"
+    else:
+        dir_path = path
     init_trie(tr, dir_path)
 
     # Gives ALL the results as the tree is traversed in entirety
-    print(tr.search("/home"))
+    out = tr.search("/home")
+    return out
 
 
 if __name__ == '__main__':

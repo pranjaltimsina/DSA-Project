@@ -1,5 +1,9 @@
 import curses
 from curses import wrapper
+import fuzzy
+import trie
+
+import timeit
 
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
@@ -41,7 +45,11 @@ def main(s):
     * Main function wrapped by wrapper so that terminal doesn't get messed up
     * by accident
     '''
-
+    
+    # Make the trie
+    # trie.main returns list of all possible paths
+    file_list = trie.main('/home/pranjal/Dev/rustlings')
+    
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 
     s.clear()  # Clear the terminal
@@ -71,13 +79,11 @@ def main(s):
     full_string = ""  # full_string is the search query
 
     # Store the output here, edit line 86 to format things appropriately
-    matches = []
 
     # Main loop
     while True:
         # Get a character from the keyboard
         c = s.getch(3, input_x)
-
         if (c in [263, 127] and not input_x == 11):
             # Check if backspace and not empty string
             input_x -= 1  # Decrement cursors x-coordinate
@@ -91,16 +97,32 @@ def main(s):
             # Add the chr to the search query and increment cursor position
             full_string += chr(c)
             input_x += 1
+        
+        #"""
+        counter = 0
+        matches = []
 
-        """
-            TODO: fuzzy search the dirs and store the result in matches
-        """
+        start_time = timeit.default_timer()
+        for file in file_list:
+            file_name = file.split('/')[-1]
+            if ('.' in file_name):
+                out = fuzzy.fuzzy_match(full_string, file_name)
+                if out[0]:
+                    counter +=1
+                    matches.append((out[1], file_name,
+                        "/".join(file.split('/')[:-1])))
+        end_time = timeit.default_timer()
+        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
+        # """
 
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
-            for match in matches:
-                output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+            with open('log.txt', 'a') as log:
+                for match in matches:
+                    log.write(f"{match[0]} | {match[1]}\n")
+                    output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+            output_box.addstr(time_taken)
 
         elif (full_string == ""):
             # Message if there is no input
@@ -110,7 +132,6 @@ def main(s):
         else:
             # Message if there are no matches
             output_box.clear()
-            output_box.addstr(f"{full_string}\n")
             output_box.addstr('What you seek for lies beyond the realms of possibility')
 
         # refreesh all boxes
@@ -125,6 +146,5 @@ def main(s):
             # Quit if <ESC> is pressed
             curses.endwin()
             break
-
 
 wrapper(main)
