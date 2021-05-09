@@ -75,7 +75,7 @@ def main(s):
         # Get a character from the keyboard
         c = s.getch(3, input_x)
 
-        if (c == 263 and not input_x == 11):
+        if (c in [263, 22] and not input_x == 11):
             # Check if backspace and not empty string 
             input_x -=1 # Decrement cursors x-coordinate
             full_string = full_string[:-1] # Remove last char of search query
