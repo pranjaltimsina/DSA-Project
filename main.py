@@ -77,7 +77,7 @@ def main(s):
 
     # The output box that covers the rest of the screen
     output_box = s.subwin(sh-5, sw-3, 5, 3)
-    output_box.addstr('Results:\nTo find, you must seek')
+    output_box.addstr('Results:\nTo find, you must seek!')
 
     # Instructions the bottom of the screen
     s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.')
@@ -102,6 +102,8 @@ def main(s):
                 full_string = full_string[:-1]  # Remove last char of search query
                 s.delch(3, input_x)  # Remove the character from the screen
                 output_box.clear()  # Clear the output box
+            else:
+                continue
         elif not validate_key(c):
             continue
 
@@ -123,6 +125,8 @@ def main(s):
                     counter += 1
                     matches.append((out[1], file_name,
                                     "/".join(file.split('/')[:-1])))
+        if matches:
+            matches.sort(key=lambda x: x[0], reverse=True)
         end_time = timeit.default_timer()
         time_taken = f"{counter} matche(s) in {(end_time - start_time) * 1000} ms"
         if counter > sh - 10:
@@ -136,12 +140,12 @@ def main(s):
         elif (full_string == ""):
             # Message if there is no input
             output_box.clear()
-            output_box.addstr('To find, you must seek')
+            output_box.addstr('To find, you must seek!')
 
         else:
             # Message if there are no matches
             output_box.clear()
-            output_box.addstr('What you seek for lies beyond the realms of possibility')
+            output_box.addstr('What you seek for lies beyond the realms of possibility!')
 
         # refreesh all boxes
         search_box.refresh()
