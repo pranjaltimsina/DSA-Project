@@ -121,21 +121,15 @@ def main(s):
                                     "/".join(file.split('/')[:-1])))
         end_time = timeit.default_timer()
         time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
-        if counter > sh - 8:
-            matches = matches[:sh-7]
+        if counter > sh - 10:
+            matches = matches[:sh-10]
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
-            with open('log.txt', 'a') as log:
-                for match in matches:
-                    log.write(f"| {datetime.datetime.now():>20} | {match[0]:>4} | {match[1]}")
-                    try:
-                        output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
-                        log.write(f"\n")
-                    except:
-                        log.write(f" | FAILED\n")
+            for match in matches:
+                output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
 
-            output_box.addstr(time_taken)
+            output_box.addstr(f"\n\n{time_taken}")
 
         elif (full_string == ""):
             # Message if there is no input
