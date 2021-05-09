@@ -5,6 +5,33 @@ from curses import wrapper
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
 """
 
+def validate_key(c: int):
+    invalids = [
+            10,
+            263,
+            262,
+            360, 
+            331,
+            339,
+            330,
+            338,
+            258,
+            259,
+            260,
+            261,
+            410,
+            343,
+            575,
+            580,
+            579,
+            577
+            ]
+    invalids += range(265, 275)
+    if (c in invalids):
+        return False
+    else:
+        return True
+
 def main(s):
     '''
     * s is the whole screen as an object
@@ -18,7 +45,6 @@ def main(s):
     curses.raw() # Get raw input from the keyboard 
     curses.echo() # Echo the input keys to the screen
     curses.nl() # Set enter to correspond to new line
-    s.keypad(1) # Accept all kinds of inputs (like page up and page down)
 
     # Create a title box with height 2 rows and width 100%, starting at 1, 0
     title_box = s.subwin(2, sw-7, 1, 3)
@@ -55,12 +81,10 @@ def main(s):
             full_string = full_string[:-1] # Remove last char of search query
             s.delch(3,input_x) # Remove the character from the screen
             output_box.clear() # Clear the output box 
-        
-        elif (chr(c) == "\n" or c == 10 or (c == 263 and input_x == 11)):
-            # Input validation 
+        elif not validate_key(c):
             continue
 
-        else:  
+        elif not chr(c) == "\n":  
             # Add the chr to the search query and increment cursor position
             full_string += chr(c)
             input_x += 1
@@ -83,6 +107,7 @@ def main(s):
         else:
             # Message if there are no matches
             output_box.clear()
+            output_box.addstr(f"{full_string}\n")
             output_box.addstr('What you seek for lies beyond the realms of possibility')
         
         # refreesh all boxes 
