@@ -1,5 +1,6 @@
 import curses
 from curses import wrapper
+import sys
 import fuzzy
 import trie
 
@@ -46,9 +47,15 @@ def main(s):
     * by accident
     '''
 
+    # Accept path as command line argument
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        path = ''
+
     # Make the trie
     # trie.main returns list of all possible paths
-    file_list = trie.main('/home/krish/Pictures')
+    file_list = trie.main(path)
 
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 

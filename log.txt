@@ -37,3 +37,19 @@
 -25 | invoked.timestamp
 -44 | build-script-build-script-build.json
 -25 | invoked.timestamp
+-19 | Jimi Hendrix Trip.jpg
+-4 | Hendrix DAD.jpg
+-23 | Jimi Hendrix Trip (2).jpg
+-14 | Jimi Hendrix.jpg
+-23 | The Old Guitarist.jpg
+-22 | The Accordionist.jpg
+-23 | Night Scene.jpg
+-22 | Beach Pier.jpg
+-19 | Jimi Hendrix Trip.jpg
+-4 | Hendrix DAD.jpg
+-23 | Jimi Hendrix Trip (2).jpg
+-14 | Jimi Hendrix.jpg
+-23 | The Old Guitarist.jpg
+-22 | The Accordionist.jpg
+-23 | Night Scene.jpg
+-22 | Beach Pier.jpg
