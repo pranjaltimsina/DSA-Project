@@ -96,6 +96,7 @@ def main(s):
             input_x -= 1  # Decrement cursors x-coordinate
             full_string = full_string[:-1]  # Remove last char of search query
             s.addch(3, input_x, " ")
+            s.addch(3, input_x+1, " ")
             s.delch(3, input_x)  # Remove the character from the screen
             output_box.clear()  # Clear the output box
         elif not validate_key(c):
