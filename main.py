@@ -45,11 +45,11 @@ def main(s):
     * Main function wrapped by wrapper so that terminal doesn't get messed up
     * by accident
     '''
-    
+
     # Make the trie
     # trie.main returns list of all possible paths
-    file_list = trie.main('/home/pranjal/Dev/rustlings')
-    
+    file_list = trie.main('/home/krish/Pictures')
+
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 
     s.clear()  # Clear the terminal
@@ -97,23 +97,22 @@ def main(s):
             # Add the chr to the search query and increment cursor position
             full_string += chr(c)
             input_x += 1
-        
-        #"""
+
         counter = 0
         matches = []
 
         start_time = timeit.default_timer()
+        # Performing fuzzy search on each file in file system
         for file in file_list:
             file_name = file.split('/')[-1]
             if ('.' in file_name):
                 out = fuzzy.fuzzy_match(full_string, file_name)
                 if out[0]:
-                    counter +=1
+                    counter += 1
                     matches.append((out[1], file_name,
-                        "/".join(file.split('/')[:-1])))
+                                    "/".join(file.split('/')[:-1])))
         end_time = timeit.default_timer()
         time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
-        # """
 
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
@@ -146,5 +145,6 @@ def main(s):
             # Quit if <ESC> is pressed
             curses.endwin()
             break
+
 
 wrapper(main)

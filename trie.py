@@ -76,11 +76,11 @@ def init_trie(tr, path):
         tr.insert(file)
 
 
-def main(path = None):
+def main(path=None):
     tr = Trie()
     # dir_path = input("Enter your directory path: ")
     if not path:
-        dir_path = "/home/pranjal/Pictures"
+        dir_path = "/home"
     else:
         dir_path = path
     init_trie(tr, dir_path)
