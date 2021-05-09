@@ -121,7 +121,8 @@ def main(s):
                                     "/".join(file.split('/')[:-1])))
         end_time = timeit.default_timer()
         time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
-
+        if counter > sh - 8:
+            matches = matches[:sh-7]
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
