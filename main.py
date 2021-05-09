@@ -5,6 +5,7 @@ import fuzzy
 import trie
 
 import timeit
+import datetime
 
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
@@ -51,7 +52,7 @@ def main(s):
     try:
         path = sys.argv[1]
     except IndexError:
-        path = '~/Pictures' 
+        path = None 
 
     # Make the trie
     # trie.main returns list of all possible paths
@@ -126,8 +127,12 @@ def main(s):
             output_box.clear()
             with open('log.txt', 'a') as log:
                 for match in matches:
-                    log.write(f"{match[0]} | {match[1]}\n")
-                    output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+                    log.write(f"{datetime.datetime.now()} {match[0]} | {match[1]}\n")
+                    try:
+                        output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+                    except:
+                        log.write(f"Failed\n")
+
             output_box.addstr(time_taken)
 
         elif (full_string == ""):
