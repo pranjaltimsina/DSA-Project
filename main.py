@@ -156,12 +156,14 @@ def main(s):
                     full_file_path = match[2]+'/'+match[1]
                     new_file_list.append(full_file_path)
             time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
-        if counter > sh - 10:
-            matches = matches[:sh-11]
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
-            for match in matches:
+            if counter > sh - 10:
+                temp_matches = matches[:sh-11]
+            else:
+                temp_matches = matches
+            for match in temp_matches:
                 output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
 
         elif (full_string == ""):
