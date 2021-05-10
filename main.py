@@ -62,8 +62,11 @@ def main(s):
 
     # Make the trie
     # trie.main returns list of all possible paths
-    file_list = trie.main(path)
-
+    with open('log.txt', 'a') as log:
+        index_time = timeit.default_timer()
+        file_list = trie.main(path)
+        index_time_e = timeit.default_timer()
+        log.write(f"Indexing took {(index_time_e - index_time) * 1000} ms\n")
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 
     s.clear()  # Clear the terminal
@@ -122,21 +125,29 @@ def main(s):
 
         counter = 0
         matches = []
-
-        start_time = timeit.default_timer()
+        time_taken = ""
         # Performing fuzzy search on each file in file system
-        for file in file_list:
-            file_name = file.split('/')[-1]
-            if ('.' in file_name):
-                out = fuzzy.fuzzy_match(full_string, file_name)
-                if out[0]:
-                    counter += 1
-                    matches.append((out[1], file_name,
-                                    "/".join(file.split('/')[:-1])))
-        if matches:
-            matches.sort(key=lambda x: x[0], reverse=True)
-        end_time = timeit.default_timer()
-        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
+        with open('log.txt', 'a') as log:
+            start_time = timeit.default_timer()
+            for file in file_list:
+                file_name = file.split('/')[-1]
+                if ('.' in file_name):
+                    fuzzy_time = timeit.default_timer()
+                    out = fuzzy.fuzzy_match(full_string, file_name)
+                    fuzzy_time_e = timeit.default_timer()
+                    log.write(f"fuzzy match took {(fuzzy_time_e - fuzzy_time)*1000} ms\n")
+                    if out[0]:
+                        counter += 1
+                        matches.append((out[1], file_name,
+                                        "/".join(file.split('/')[:-1])))
+            end_time = timeit.default_timer()
+            log.write(f"Looping took {(end_time - start_time) * 1000} ms\n")
+            if matches:
+                sort_time = timeit.default_timer()
+                matches.sort(key=lambda x: x[0], reverse=True)
+                sort_time_e = timeit.default_timer()
+                log.write(f"Sorting took {(sort_time_e - sort_time) * 1000} ms\n")
+            time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
         if counter > sh - 10:
             matches = matches[:sh-11]
         if (not full_string == "" and not matches == []):
