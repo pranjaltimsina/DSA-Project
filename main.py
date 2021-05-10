@@ -52,12 +52,12 @@ def main(s):
         path = sys.argv[1]
     except IndexError:
         path = None
-    
+
     # Define colors
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_GREEN , curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
     # Make the trie
@@ -98,12 +98,16 @@ def main(s):
 
     # Store the output here, edit line 86 to format things appropriately
 
+    new_file_list = file_list
+
     # Main loop
     while True:
         # Get a character from the keyboard
         c = s.getch(3, input_x)
         if (c in [263, 127]):
             # Check if backspace
+            # TODO: cache thing here instead of accessing entire filesystem
+            new_file_list = file_list
             s.addch(3, input_x, " ")
             s.addch(3, input_x+1, " ")
             s.addch(3, input_x+2, " ")
@@ -126,10 +130,10 @@ def main(s):
         counter = 0
         matches = []
         time_taken = ""
-        # Performing fuzzy search on each file in file system
+        # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
         with open('log.txt', 'a') as log:
             start_time = timeit.default_timer()
-            for file in file_list:
+            for file in new_file_list:
                 file_name = file.split('/')[-1]
                 if ('.' in file_name):
                     fuzzy_time = timeit.default_timer()
@@ -147,6 +151,10 @@ def main(s):
                 matches.sort(key=lambda x: x[0], reverse=True)
                 sort_time_e = timeit.default_timer()
                 log.write(f"Sorting took {(sort_time_e - sort_time) * 1000} ms\n")
+                new_file_list = []
+                for match in matches:
+                    full_file_path = match[2]+'/'+match[1]
+                    new_file_list.append(full_file_path)
             time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
         if counter > sh - 10:
             matches = matches[:sh-11]
