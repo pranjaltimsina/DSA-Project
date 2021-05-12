@@ -4,6 +4,8 @@ import sys
 import fuzzy
 import trie
 
+from fuzzywuzzy import fuzz
+
 import timeit
 
 """
@@ -137,12 +139,12 @@ def main(s):
                 file_name = file.split('/')[-1]
                 if ('.' in file_name):
                     fuzzy_time = timeit.default_timer()
-                    out = fuzzy.fuzzy_match(full_string, file_name)
+                    out = fuzz.ratio(full_string, file_name)
                     fuzzy_time_e = timeit.default_timer()
                     log.write(f"fuzzy match took {(fuzzy_time_e - fuzzy_time)*1000} ms\n")
-                    if out[0]:
+                    if out > 50:
                         counter += 1
-                        matches.append((out[1], file_name,
+                        matches.append((out, file_name,
                                         "/".join(file.split('/')[:-1])))
             end_time = timeit.default_timer()
             log.write(f"Looping took {(end_time - start_time) * 1000} ms\n")
