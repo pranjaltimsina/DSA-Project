@@ -35,6 +35,10 @@ A handy tool in the form of a **command line interface** that allows you to **se
 ```
 
 **note:** if no path is defined, it defaults to _/home_ because if you aren't using Linux in 2021, are you even a koder?
+## Peep this
+
+https://user-images.githubusercontent.com/52796005/118361327-cce41980-b53f-11eb-8201-946c0659b361.mp4
+
 ## FAQ
 
 #### Q: Which data structure have you used here? 
