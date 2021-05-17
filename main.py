@@ -164,7 +164,13 @@ def main(s):
             else:
                 temp_matches = matches
             for match in temp_matches:
-                output_box.addstr(f'{match[0]:>4} | {match[1]}\n')
+                path = match[2]
+                path = path.split('/')
+                path = path[-2:]
+                path = '/'.join(path) + '/'  
+                output_box.addstr(f'{match[0]:>4} | ')
+                output_box.addstr(f'.../{path:<45}', curses.color_pair(2))
+                output_box.addstr(f' | {match[1]}\n')
 
         elif (full_string == ""):
             # Message if there is no input
