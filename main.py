@@ -12,7 +12,7 @@ NOTE: All coordinates are in the format (y, x) because that's how curses works)
 
 
 def validate_key(c: int):
-    invalids = [
+    INVALIDS = [
             10,
             263,
             262,
@@ -32,9 +32,9 @@ def validate_key(c: int):
             579,
             577
             ]
-    invalids += range(265, 275)
+    INVALIDS += range(265, 275)
     decoded = curses.keyname(c).decode('utf-8')
-    if (c in invalids or decoded.startswith('^') and not decoded.startswith('^[')):
+    if (c in INVALIDS or decoded.startswith('^') and not decoded.startswith('^[')):
         return False
     else:
         return True
@@ -62,11 +62,7 @@ def main(s):
 
     # Make the trie
     # trie.main returns list of all possible paths
-    with open('log.txt', 'a') as log:
-        index_time = timeit.default_timer()
-        file_list = trie.main(path)
-        index_time_e = timeit.default_timer()
-        log.write(f"Indexing took {(index_time_e - index_time) * 1000} ms\n")
+    file_list = trie.main(path)
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 
     s.clear()  # Clear the terminal
@@ -100,11 +96,12 @@ def main(s):
 
     new_file_list = file_list
 
+    BACKSPACES = [127, 263]
     # Main loop
-    while True:
+    while 1:
         # Get a character from the keyboard
         c = s.getch(3, input_x)
-        if (c in [263, 127]):
+        if c in BACKSPACES:
             # Check if backspace
             # TODO: cache thing here instead of accessing entire filesystem
             new_file_list = file_list
@@ -131,31 +128,23 @@ def main(s):
         matches = []
         time_taken = ""
         # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
-        with open('log.txt', 'a') as log:
-            start_time = timeit.default_timer()
-            for file in new_file_list:
-                file_name = file.split('/')[-1]
-                if ('.' in file_name):
-                    fuzzy_time = timeit.default_timer()
-                    out = fuzzy.fuzzy_match(full_string, file_name)
-                    fuzzy_time_e = timeit.default_timer()
-                    log.write(f"fuzzy match took {(fuzzy_time_e - fuzzy_time)*1000} ms\n")
-                    if out[0]:
-                        counter += 1
-                        matches.append((out[1], file_name,
-                                        "/".join(file.split('/')[:-1])))
-            end_time = timeit.default_timer()
-            log.write(f"Looping took {(end_time - start_time) * 1000} ms\n")
-            if matches:
-                sort_time = timeit.default_timer()
-                matches.sort(key=lambda x: x[0], reverse=True)
-                sort_time_e = timeit.default_timer()
-                log.write(f"Sorting took {(sort_time_e - sort_time) * 1000} ms\n")
-                new_file_list = []
-                for match in matches:
-                    full_file_path = match[2]+'/'+match[1]
-                    new_file_list.append(full_file_path)
-            time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
+        start_time = timeit.default_timer()
+        for file in new_file_list:
+            file_name = file.split('/')[-1]
+            if ('.' in file_name):
+                out = fuzzy.fuzzy_match(full_string, file_name)
+                if out[0]:
+                    counter += 1
+                    matches.append((out[1], file_name,
+                                    "/".join(file.split('/')[:-1])))
+        end_time = timeit.default_timer()
+        if matches:
+            matches.sort(key=lambda x: x[0], reverse=True)
+            new_file_list = []
+            for match in matches:
+                full_file_path = match[2]+'/'+match[1]
+                new_file_list.append(full_file_path)
+        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
         if (not full_string == "" and not matches == []):
             # Clear the output box and add the matches
             output_box.clear()
@@ -167,7 +156,7 @@ def main(s):
                 path = match[2]
                 path = path.split('/')
                 path = path[-2:]
-                path = '/'.join(path) + '/'  
+                path = '/'.join(path) + '/'
                 output_box.addstr(f'{match[0]:>4} | ')
                 output_box.addstr(f'.../{path:<45}', curses.color_pair(2))
                 output_box.addstr(f' | {match[1]}\n')
