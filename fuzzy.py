@@ -1,24 +1,6 @@
 # FUZZY SEARCH
 # Returns true if each character in pattern is found in the string sequentially
 
-"""
-def fuzzy_match_simple(pattern, string):
-    pattern_idx = 0
-    pattern_length = len(pattern)
-    str_idx = 0
-    str_length = len(string)
-
-    while pattern_idx != pattern_length and str_idx != str_length:
-        pattern_char = pattern[pattern_idx].lower()
-        str_char = string[str_idx].lower()
-        if pattern_char == str_char:
-            pattern_idx += 1
-        str_idx += 1
-    return (pattern_length != 0
-            and str_length != 0
-            and pattern_idx == pattern_length)
-"""
-
 # Bonus Constants
 ADJACENCY_BONUS = 5
 SEPERATOR_BONUS = 10
@@ -32,8 +14,6 @@ def fuzzy_match(pattern, string):
     score = 0
     pattern_idx = 0
     pattern_length = len(pattern)
-    str_idx = 0
-    str_length = len(string)
     prev_matched = False
     prev_lower = False
     prev_seperator = True  # Set True so that first letter gets seperator bonus
@@ -41,18 +21,14 @@ def fuzzy_match(pattern, string):
     # Use best matched letter if multiple letters match
     best_letter = None
     best_lower = None
-    best_letter_idx = None
     best_letter_score = 0
 
-    matched_indices = []
 
     # Looping over strings
-    while str_idx != str_length:
+    for (str_idx, str_char) in enumerate(string):
+
         pattern_char = '' if pattern_idx == pattern_length else pattern[pattern_idx]
-
-        str_char = string[str_idx]
-
-        pattern_lower = pattern_char.lower() if pattern_char else ''
+        pattern_lower = pattern_char.lower() 
 
         str_lower = str_char.lower()
         str_upper = str_char.upper()
@@ -64,10 +40,8 @@ def fuzzy_match(pattern, string):
         pattern_repeat = best_letter and pattern_char and best_lower == pattern_lower
         if(advanced or pattern_repeat):
             score += best_letter_score
-            matched_indices.append(best_letter_idx)
             best_letter = ''
             best_lower = ''
-            best_letter_idx = ''
             best_letter_score = 0
 
         if next_match or rematch:
@@ -88,7 +62,7 @@ def fuzzy_match(pattern, string):
                 new_score += SEPERATOR_BONUS
 
             # Apply bonus for camelCase matches
-            if prev_lower and str_char == str_upper and str_lower != str_upper:
+            if prev_lower and str_char == str_upper:
                 new_score += CAMEL_BONUS
 
             # Update patter index IFF the next pattern letter was matched
@@ -101,7 +75,6 @@ def fuzzy_match(pattern, string):
                     score += UNMATCHED_LETTER_PENALTY
                 best_letter = str_char
                 best_lower = best_letter.lower()
-                best_letter_idx = str_idx
                 best_letter_score = new_score
 
             prev_matched = True
@@ -111,29 +84,13 @@ def fuzzy_match(pattern, string):
             score += UNMATCHED_LETTER_PENALTY
             prev_matched = False
 
-        prev_lower = str_char == str_lower and str_lower != str_upper
+        prev_lower = str_char == str_lower
         prev_seperator = str_char == '_' or str_char == ' '
 
-        str_idx += 1
 
     # Apply score for last match
     if best_letter:
-        score += best_letter_score
-        matched_indices.append(best_letter_idx)
+        score += best_letter_score 
 
     return (pattern_idx == pattern_length, score)
 
-"""
-def main():
-    # If doing simple, print alphabetically
-    result = fuzzy_match_simple('pattern', 'StringToMatchPattern.tsx')
-    print(result)
-    # If doing complex, print ranked
-    result = fuzzy_match('pattern', 'StringToMatchPattern.tsx')
-    print(result)
-
-
-if __name__ == "__main__":
-    main()
-
-"""

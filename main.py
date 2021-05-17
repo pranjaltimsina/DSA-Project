@@ -1,15 +1,11 @@
 import curses
 from curses import wrapper
 import sys
-import fuzzy
-import trie
-
-import timeit
-
+from trie import main as trie
+from timeit import default_timer
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
 """
-
 
 INVALIDS = [
         10,
@@ -41,6 +37,8 @@ def validate_key(c: int):
         return True
 
 
+cache = dict() 
+
 def main(s):
     '''
     * s is the whole screen as an object
@@ -62,7 +60,7 @@ def main(s):
 
     # Make the trie
     # trie.main returns list of all possible paths
-    file_list = trie.main(path)
+    file_list = trie(path)
     sh, sw = s.getmaxyx()  # Get the height, and width of the terminal
 
     s.clear()  # Clear the terminal
@@ -98,10 +96,18 @@ def main(s):
 
     BACKSPACES = [127, 263]
     # Main loop
+
+    # lazy import for marginally faster loads
+    import fuzzy
+
     while 1:
         # Get a character from the keyboard
         c = s.getch(3, input_x)
-        if c in BACKSPACES:
+        if (c == 27):
+            # Quit if <ESC> is pressed
+            curses.endwin()
+            sys.exit() 
+        elif c in BACKSPACES:
             # Check if backspace
             # TODO: cache thing here instead of accessing entire filesystem
             new_file_list = file_list
@@ -128,19 +134,25 @@ def main(s):
         matches = []
         time_taken = ""
         # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
-        start_time = timeit.default_timer()
+        start_time = default_timer()
+        if full_string in cache:
+           matches = cache[full_string] 
+
+        # cache is not working for some reason, so let this else be commented
+        # else:
         for file in new_file_list:
-            file_name = file.split('/')[-1]
-            if ('.' in file_name):
+            if ('.' in file):
+                file_name = file.split('/')[-1]
                 out = fuzzy.fuzzy_match(full_string, file_name)
                 if out[0]:
                     counter += 1
                     matches.append((out[1], file_name,
-                                    "/".join(file.split('/')[:-1])))
-
-        end_time = timeit.default_timer()
+                                    "/".join(file.split('/')[-3:-1])))
+        matches.sort(key=lambda x: x[0], reverse=True)
+        cache[full_string] = matches
+        
+        end_time = default_timer()
         if matches:
-            matches.sort(key=lambda x: x[0], reverse=True)
             new_file_list = []
             for match in matches:
                 full_file_path = match[2]+'/'+match[1]
@@ -153,10 +165,14 @@ def main(s):
                 temp_matches = matches[:sh-11]
             else:
                 temp_matches = matches
+
+            with open('log.txt', 'a') as log:
+                log.write('\n\n\nNewPass\n\n\n')
+                for match in temp_matches:
+                        log.write(f"{match[0]} {match[1]} {match[2]}\n")
             for match in temp_matches:
-                path = '/'.join(match[2].split('/')[-2:]) + '/'
                 output_box.addstr(f'{match[0]:>4} | ')
-                output_box.addstr(f'.../{path:<45}', curses.color_pair(2))
+                output_box.addstr(f'.../{match[2]:<45}', curses.color_pair(2))
                 output_box.addstr(f' | {match[1]}\n')
 
         elif (full_string == ""):
@@ -178,10 +194,6 @@ def main(s):
         s.addstr(sh-2, 3, time_taken, curses.color_pair(2))
         s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.', curses.color_pair(3))
 
-        if (c == 27):
-            # Quit if <ESC> is pressed
-            curses.endwin()
-            break
 
 
 wrapper(main)

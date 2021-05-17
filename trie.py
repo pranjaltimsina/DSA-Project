@@ -51,7 +51,6 @@ class Trie(object):
 # Return list of files and subdirectories after recursively traversing through
 def init_trie(dir_name, tr):
     list_of_file = os.listdir(dir_name)
-    all_files = list()
     # Iterate over all them entries
     for entry in list_of_file:
         # Create full path to the entry
