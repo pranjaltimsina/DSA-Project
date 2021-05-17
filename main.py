@@ -11,28 +11,29 @@ NOTE: All coordinates are in the format (y, x) because that's how curses works)
 """
 
 
+INVALIDS = [
+        10,
+        263,
+        262,
+        360,
+        331,
+        339,
+        330,
+        338,
+        258,
+        259,
+        260,
+        261,
+        410,
+        343,
+        575,
+        580,
+        579,
+        577
+        ]
+INVALIDS += range(265, 275)
+
 def validate_key(c: int):
-    INVALIDS = [
-            10,
-            263,
-            262,
-            360,
-            331,
-            339,
-            330,
-            338,
-            258,
-            259,
-            260,
-            261,
-            410,
-            343,
-            575,
-            580,
-            579,
-            577
-            ]
-    INVALIDS += range(265, 275)
     decoded = curses.keyname(c).decode('utf-8')
     if (c in INVALIDS or decoded.startswith('^') and not decoded.startswith('^[')):
         return False
@@ -54,7 +55,6 @@ def main(s):
         path = None
 
     # Define colors
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -137,6 +137,7 @@ def main(s):
                     counter += 1
                     matches.append((out[1], file_name,
                                     "/".join(file.split('/')[:-1])))
+
         end_time = timeit.default_timer()
         if matches:
             matches.sort(key=lambda x: x[0], reverse=True)
@@ -145,7 +146,7 @@ def main(s):
                 full_file_path = match[2]+'/'+match[1]
                 new_file_list.append(full_file_path)
         time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
-        if (not full_string == "" and not matches == []):
+        if (not (full_string == "" or matches == [])):
             # Clear the output box and add the matches
             output_box.clear()
             if counter > sh - 10:
@@ -153,10 +154,7 @@ def main(s):
             else:
                 temp_matches = matches
             for match in temp_matches:
-                path = match[2]
-                path = path.split('/')
-                path = path[-2:]
-                path = '/'.join(path) + '/'
+                path = '/'.join(match[2].split('/')[-2:]) + '/'
                 output_box.addstr(f'{match[0]:>4} | ')
                 output_box.addstr(f'.../{path:<45}', curses.color_pair(2))
                 output_box.addstr(f' | {match[1]}\n')

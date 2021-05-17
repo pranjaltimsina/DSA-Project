@@ -80,8 +80,6 @@ def main(path=None):
 
     # Gives ALL the results as the tree is traversed in entirety
     out = tr.search("/home")
-    with open ('log.txt', 'a') as file:
-        file.write(f"{len(out)} files indexed\n")
     return out
 
 
