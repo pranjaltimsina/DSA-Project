@@ -1,5 +1,7 @@
 # FUZZY SEARCH
 # Returns true if each character in pattern is found in the string sequentially
+
+"""
 def fuzzy_match_simple(pattern, string):
     pattern_idx = 0
     pattern_length = len(pattern)
@@ -15,17 +17,17 @@ def fuzzy_match_simple(pattern, string):
     return (pattern_length != 0
             and str_length != 0
             and pattern_idx == pattern_length)
+"""
 
+# Bonus Constants
+ADJACENCY_BONUS = 5
+SEPERATOR_BONUS = 10
+CAMEL_BONUS = 10
+LEADING_LETTER_PENALTY = -3
+MAX_LEADING_LETTER_PENALTY = -9
+UNMATCHED_LETTER_PENALTY = -1
 
 def fuzzy_match(pattern, string):
-    # Bonus Constants
-    ADJACENCY_BONUS = 5
-    SEPERATOR_BONUS = 10
-    CAMEL_BONUS = 10
-    LEADING_LETTER_PENALTY = -3
-    MAX_LEADING_LETTER_PENALTY = -9
-    UNMATCHED_LETTER_PENALTY = -1
-
     # Loop variables
     score = 0
     pattern_idx = 0
@@ -46,17 +48,12 @@ def fuzzy_match(pattern, string):
 
     # Looping over strings
     while str_idx != str_length:
-        if pattern_idx == pattern_length:
-            pattern_char = ''
-        else:
-            pattern_char = pattern[pattern_idx]
+        pattern_char = '' if pattern_idx == pattern_length else pattern[pattern_idx]
 
         str_char = string[str_idx]
 
-        if pattern_char:
-            pattern_lower = pattern_char.lower()
-        else:
-            pattern_lower = ''
+        pattern_lower = pattern_char.lower() if pattern_char else ''
+
         str_lower = str_char.lower()
         str_upper = str_char.upper()
 
@@ -124,10 +121,9 @@ def fuzzy_match(pattern, string):
         score += best_letter_score
         matched_indices.append(best_letter_idx)
 
-    matched = pattern_idx == pattern_length
-    return (matched, score)
+    return (pattern_idx == pattern_length, score)
 
-
+"""
 def main():
     # If doing simple, print alphabetically
     result = fuzzy_match_simple('pattern', 'StringToMatchPattern.tsx')
@@ -139,3 +135,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
