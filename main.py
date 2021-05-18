@@ -2,12 +2,17 @@ import curses
 from curses import wrapper
 import sys
 from timeit import default_timer
+import multiprocessing
 
 from trie import main as trie
+import fuzzy
 from LRUcache import LRUCache
+
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
 """
+manager = multiprocessing.Manager()
+mutex = manager.Lock()
 
 INVALIDS = [
         10,
@@ -40,8 +45,34 @@ def validate_key(c: int):
         return True
 
 
-cache = LRUCache(10)
+cache = LRUCache(40)
 
+def index_letters():
+    with open('log.txt', 'a') as log:
+        log.write("index thread\n")
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        path = None
+
+    file_list = trie(path)
+
+    for i in range(ord('a'), ord('z')+1):
+        full_string = chr(i)
+        matches = []
+        for file in file_list:
+            file_name = file.split('/')[-1]
+            if ('.' in file_name):
+                out = fuzzy.fuzzy_match(full_string, file_name)
+                if out[0]:
+                    full_path = "/".join(file.split('/')[-3:-1])
+                    if len(full_path) > 45:
+                        full_path = "..." + full_path[-42:]
+                    matches.append((out[1], file_name, full_path))
+        matches.sort(key=lambda x: x[0], reverse=True)
+        mutex.acquire()
+        cache.put(full_string, matches)
+        mutex.release()
 
 def main(s):
     '''
@@ -49,6 +80,9 @@ def main(s):
     * Main function wrapped by wrapper so that terminal doesn't get messed up
     * by accident
     '''
+
+    with open('log.txt', 'a') as log:
+        log.write("Curses thread\n")
 
     # Accept path as command line argument
     try:
@@ -101,8 +135,6 @@ def main(s):
     BACKSPACES = [127, 263]
     # Main loop
 
-    # lazy import for marginally faster loads
-    import fuzzy
 
     while 1:
         # Get a character from the keyboard
@@ -152,7 +184,9 @@ def main(s):
                             full_path = "..." + full_path[-42:]
                         matches.append((out[1], file_name, full_path))
             matches.sort(key=lambda x: x[0], reverse=True)
+            mutex.acquire()
             cache.put(full_string, matches)
+            mutex.release()
 
         end_time = default_timer()
         if matches:
@@ -194,4 +228,10 @@ def main(s):
         s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.', curses.color_pair(3))
 
 
-wrapper(main)
+if __name__ == "__main__":
+    indexer = multiprocessing.Process(target=index_letters)
+    main_loop = multiprocessing.Process(target=wrapper, args=(main,))
+    indexer.start()
+    main_loop.start()
+    indexer.join()
+    main_loop.join()
