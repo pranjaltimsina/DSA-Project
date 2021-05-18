@@ -1,8 +1,10 @@
 import curses
 from curses import wrapper
 import sys
-from trie import main as trie
 from timeit import default_timer
+
+from trie import main as trie
+from LRUcache import LRUCache
 """
 NOTE: All coordinates are in the format (y, x) because that's how curses works)
 """
@@ -37,7 +39,7 @@ def validate_key(c: int):
         return True
 
 
-cache = dict() 
+cache = LRUCache(10) 
 
 def main(s):
     '''
@@ -109,7 +111,6 @@ def main(s):
             sys.exit() 
         elif c in BACKSPACES:
             # Check if backspace
-            # TODO: cache thing here instead of accessing entire filesystem
             new_file_list = file_list
             s.addch(3, input_x, " ")
             s.addch(3, input_x+1, " ")
@@ -134,10 +135,11 @@ def main(s):
         time_taken = ""
         # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
         start_time = default_timer()
-        if full_string in cache:
-           matches = cache[full_string] 
 
-        else:
+        matches = cache.get(full_string) 
+
+        if matches == None:
+            matches = []
             for file in new_file_list:
                 if ('.' in file):
                     file_name = file.split('/')[-1]
@@ -147,7 +149,7 @@ def main(s):
                         if len(full_path) > 45:
                             full_path = "..." + full_path[-42:]
                         matches.append((out[1], file_name, full_path))
-            cache[full_string] = matches
+            cache.put(full_string, matches) 
         
         end_time = default_timer()
         if matches:
