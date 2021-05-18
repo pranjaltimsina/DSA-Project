@@ -130,7 +130,6 @@ def main(s):
             full_string += chr(c)
             input_x += 1
 
-        counter = 0
         matches = []
         time_taken = ""
         # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
@@ -144,7 +143,6 @@ def main(s):
                     file_name = file.split('/')[-1]
                     out = fuzzy.fuzzy_match(full_string, file_name)
                     if out[0]:
-                        counter += 1
                         full_path = "/".join(file.split('/')[-3:-1])
                         if len(full_path) > 45:
                             full_path = "..." + full_path[-42:]
@@ -157,7 +155,7 @@ def main(s):
             for match in matches:
                 full_file_path = match[2]+'/'+match[1]
                 new_file_list.append(full_file_path)
-        time_taken = f"{counter} matches in {(end_time - start_time) * 1000} ms"
+        time_taken = f"{len(matches)} matches in {(end_time - start_time) * 1000} ms"
         if (not (full_string == "" or matches == [])):
             # Clear the output box and add the matches
             output_box.clear()
