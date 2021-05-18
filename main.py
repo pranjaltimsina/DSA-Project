@@ -47,7 +47,7 @@ def validate_key(c: int):
 
 cache = LRUCache(40)
 
-def index_letters():
+def index_letters(q):
     with open('log.txt', 'a') as log:
         log.write("index thread\n")
     try:
@@ -56,7 +56,7 @@ def index_letters():
         path = None
 
     file_list = trie(path)
-
+    to_put = []
     for i in range(ord('a'), ord('z')+1):
         full_string = chr(i)
         matches = []
@@ -71,8 +71,9 @@ def index_letters():
                     matches.append((out[1], file_name, full_path))
         matches.sort(key=lambda x: x[0], reverse=True)
         mutex.acquire()
-        cache.put(full_string, matches)
+        to_put.append((full_string, matches))
         mutex.release()
+    q.put(to_put)
 
 def main(s):
     '''
@@ -229,9 +230,14 @@ def main(s):
 
 
 if __name__ == "__main__":
-    indexer = multiprocessing.Process(target=index_letters)
+    q = multiprocessing.Queue()
+    indexer = multiprocessing.Process(target=index_letters, args=(q,))
     main_loop = multiprocessing.Process(target=wrapper, args=(main,))
     indexer.start()
+    vals = q.get()
+    for val in vals:
+        cache.put(val[0], val[1])
     main_loop.start()
+
     indexer.join()
     main_loop.join()
