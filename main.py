@@ -31,6 +31,7 @@ INVALIDS = [
         ]
 INVALIDS += range(265, 275)
 
+
 def validate_key(c: int):
     decoded = curses.keyname(c).decode('utf-8')
     if (c in INVALIDS or decoded.startswith('^') and not decoded.startswith('^[')):
@@ -39,7 +40,8 @@ def validate_key(c: int):
         return True
 
 
-cache = LRUCache(10) 
+cache = LRUCache(10)
+
 
 def main(s):
     '''
@@ -108,7 +110,7 @@ def main(s):
         if (c == 27):
             # Quit if <ESC> is pressed
             curses.endwin()
-            sys.exit() 
+            sys.exit()
         elif c in BACKSPACES:
             # Check if backspace
             new_file_list = file_list
@@ -136,21 +138,22 @@ def main(s):
         # Performing fuzzy search on each file in file system (reducing number of files searched on each query)
         start_time = default_timer()
 
-        matches = cache.get(full_string) 
+        matches = cache.get(full_string)
 
-        if matches == None:
+        if matches is None:
             matches = []
             for file in new_file_list:
-                if ('.' in file):
-                    file_name = file.split('/')[-1]
+                file_name = file.split('/')[-1]
+                if ('.' in file_name):
                     out = fuzzy.fuzzy_match(full_string, file_name)
                     if out[0]:
                         full_path = "/".join(file.split('/')[-3:-1])
                         if len(full_path) > 45:
                             full_path = "..." + full_path[-42:]
                         matches.append((out[1], file_name, full_path))
-            cache.put(full_string, matches) 
-        
+            matches.sort(key=lambda x: x[0], reverse=True)
+            cache.put(full_string, matches)
+
         end_time = default_timer()
         if matches:
             new_file_list = []
@@ -189,7 +192,6 @@ def main(s):
         # since everything cleared, the message at bottom needs to be written
         s.addstr(sh-2, 3, time_taken, curses.color_pair(2))
         s.addstr(sh-1, 3, 'Start typing to search! Press <ESC> to exit.', curses.color_pair(3))
-
 
 
 wrapper(main)
