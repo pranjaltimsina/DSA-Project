@@ -138,18 +138,18 @@ def main(s):
         if full_string in cache:
            matches = cache[full_string] 
 
-        # cache is not working for some reason, so let this else be commented
-        # else:
-        for file in new_file_list:
-            if ('.' in file):
-                file_name = file.split('/')[-1]
-                out = fuzzy.fuzzy_match(full_string, file_name)
-                if out[0]:
-                    counter += 1
-                    matches.append((out[1], file_name,
-                                    "/".join(file.split('/')[-3:-1])))
-        matches.sort(key=lambda x: x[0], reverse=True)
-        cache[full_string] = matches
+        else:
+            for file in new_file_list:
+                if ('.' in file):
+                    file_name = file.split('/')[-1]
+                    out = fuzzy.fuzzy_match(full_string, file_name)
+                    if out[0]:
+                        counter += 1
+                        full_path = "/".join(file.split('/')[-3:-1])
+                        if len(full_path) > 45:
+                            full_path = "..." + full_path[-42:]
+                        matches.append((out[1], file_name, full_path))
+            cache[full_string] = matches
         
         end_time = default_timer()
         if matches:
@@ -161,15 +161,11 @@ def main(s):
         if (not (full_string == "" or matches == [])):
             # Clear the output box and add the matches
             output_box.clear()
-            if counter > sh - 10:
+            if len(matches) > sh - 10:
                 temp_matches = matches[:sh-11]
             else:
                 temp_matches = matches
 
-            with open('log.txt', 'a') as log:
-                log.write('\n\n\nNewPass\n\n\n')
-                for match in temp_matches:
-                        log.write(f"{match[0]} {match[1]} {match[2]}\n")
             for match in temp_matches:
                 output_box.addstr(f'{match[0]:>4} | ')
                 output_box.addstr(f'.../{match[2]:<45}', curses.color_pair(2))
