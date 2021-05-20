@@ -94,9 +94,11 @@ def main(s):
         path = None
 
     # Define colors
-    curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    # curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    # curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
     curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
     # Make the trie
@@ -144,7 +146,7 @@ def main(s):
         if (c == 27):
             # Quit if <ESC> is pressed
             curses.endwin()
-            sys.exit()
+            return
         elif c in BACKSPACES:
             # Check if backspace
             new_file_list = file_list
