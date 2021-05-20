@@ -47,6 +47,7 @@ def validate_key(c: int):
 
 cache = LRUCache(40)
 
+
 def index_letters(q):
     with open('log.txt', 'a') as log:
         log.write("index thread\n")
@@ -74,6 +75,7 @@ def index_letters(q):
         to_put.append((full_string, matches))
         mutex.release()
     q.put(to_put)
+
 
 def main(s):
     '''
@@ -135,7 +137,6 @@ def main(s):
 
     BACKSPACES = [127, 263]
     # Main loop
-
 
     while 1:
         # Get a character from the keyboard

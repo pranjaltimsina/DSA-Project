@@ -61,11 +61,9 @@ def init_trie(dir_name, tr):
         else:
             tr.insert(full_path)
 
-    # Snek Magik
-    # list_of_files = list()
+    # Magik of the Snek
     # for (dirpath, dirnames, filenames) in os.walk(dir_name):
     #     tr.insert(os.path.join(dirpath, file) for file in filenames)
-    # return list_of_files
 
 
 def main(path=None):

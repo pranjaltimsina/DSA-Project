@@ -9,6 +9,7 @@ LEADING_LETTER_PENALTY = -3
 MAX_LEADING_LETTER_PENALTY = -9
 UNMATCHED_LETTER_PENALTY = -1
 
+
 def fuzzy_match(pattern, string):
     # Loop variables
     score = 0
@@ -23,12 +24,11 @@ def fuzzy_match(pattern, string):
     best_lower = None
     best_letter_score = 0
 
-
     # Looping over strings
     for (str_idx, str_char) in enumerate(string):
 
         pattern_char = '' if pattern_idx == pattern_length else pattern[pattern_idx]
-        pattern_lower = pattern_char.lower() 
+        pattern_lower = pattern_char.lower()
 
         str_lower = str_char.lower()
         str_upper = str_char.upper()
@@ -87,10 +87,8 @@ def fuzzy_match(pattern, string):
         prev_lower = str_char == str_lower
         prev_seperator = str_char == '_' or str_char == ' '
 
-
     # Apply score for last match
     if best_letter:
-        score += best_letter_score 
+        score += best_letter_score
 
     return (pattern_idx == pattern_length, score)
-

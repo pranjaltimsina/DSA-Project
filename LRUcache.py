@@ -18,6 +18,7 @@ class LRUTuple(tuple):
     def __gt__(self, other) -> bool:
         return not self.time < other.time
 
+
 class PriorityQueue(Generic[T]):
     def __init__(self) -> None:
         self._data: List[T] = []
@@ -81,4 +82,3 @@ class LRUCache:
 
     def __repr__(self) -> str:
         return repr([(k[0], k.time) for k in self._keyqueue._data])
-
